@@ -30,5 +30,19 @@ export function fetchFromApi(path: string, init?: RequestInit) {
 
   const url = new URL(`api/${normalizedPath}`, normalizedBaseUrl)
 
+  // eslint-disable-next-line prettier/prettier
   return fetch(url.toString(), init)
+
+
+  .catch(error => {
+    if (error.name === 'AbortError') {
+      console.error('Request timed out')
+      return { error: 'timeout' }
+    }
+    throw error
+  })
+
+  cy.get('a[href^="/product"]', { timeout: 10000 }).should('be.visible').first()
+  cy.wait(300)
+  cy.get('a[href^="/product"]').first().click({ force: true })
 }
