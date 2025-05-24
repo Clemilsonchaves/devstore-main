@@ -21,10 +21,14 @@ jobs:
           run_install: false
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-  
+
+      - name: Debug STORE_PATH
+        run: echo "STORE_PATH is ${{ env.STORE_PATH }}"
+
       - uses: actions/cache@v3
         name: Setup pnpm cache
         with:
@@ -40,15 +44,17 @@ jobs:
         uses: cypress-io/github-action@v6
         env: 
           APP_URL: "http://localhost:3000"
-          NEXT_PUBLIC_API_BASE_URL: "https://devstore-api.vercel.app" 
+          NEXT_PUBLIC_API_BASE_URL: "https://ignite-devstore-api.vercel.app"
         with:
           build: pnpm run build
           start:  pnpm start
+          wait-on: "http://localhost:3000"
+          wait-on-timeout: 60
 
-      - name: Run Cypress tests
+      - name: Set up API URL
         run: |
-          cy.get('a[href^="/product"]', { timeout: 10000 })
-            .should('be.visible')
-            .first()
-          cy.wait(500)
-          cy.get('a[href^="/product"]').first().click({ force: true })
+          const baseUrl = env.NEXT_PUBLIC_API_BASE_URL.replace(/['"]/g, '').replace(/\/$/, '')
+          const normalizedPath = path.startsWith('/') ? path.slice(1) : path
+          const url = new URL(`api/${normalizedPath}`, `${baseUrl}/`)
+          echo "API URL is $url"
+
