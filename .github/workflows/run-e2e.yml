@@ -48,4 +48,9 @@ jobs:
           build: pnpm run build
           start: pnpm start
 
-      
+      - name: Set up API URL
+        run: |
+          const baseUrl = env.NEXT_PUBLIC_API_BASE_URL.replace(/['"]/g, '').replace(/\/$/, '')
+          const normalizedPath = path.startsWith('/') ? path.slice(1) : path
+          const url = new URL(`api/${normalizedPath}`, `${baseUrl}/`)
+
