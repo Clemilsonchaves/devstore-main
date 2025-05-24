@@ -45,10 +45,4 @@ jobs:
           build: pnpm run build
           start: pnpm start
 
-      - name: Set up API URL
-        run: |
-          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/['"]/g, '').replace(/\/$/, '');
-          const url = new URL('api/products/featured', `${baseUrl}/`);
-          echo "API URL is $url"
-          echo "Cypress tests running at: C:\\Users\\cle_m\\mba-fullstack\\devstore-c\\devstore-main"
-
+     
