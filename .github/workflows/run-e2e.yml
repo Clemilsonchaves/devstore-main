@@ -44,3 +44,11 @@ jobs:
         with:
           build: pnpm run build
           start:  pnpm start
+
+      - name: Run Cypress tests
+        run: |
+          cy.get('a[href^="/product"]', { timeout: 10000 })
+            .should('be.visible')
+            .first()
+          cy.wait(500)
+          cy.get('a[href^="/product"]').first().click({ force: true })
