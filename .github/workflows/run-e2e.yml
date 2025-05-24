@@ -58,3 +58,25 @@ jobs:
           const url = new URL(`api/${normalizedPath}`, `${baseUrl}/`)
           echo "API URL is $url"
 
+      - name: Search and Add to Cart
+        run: |
+          it('should be able to search for a product and add it to the cart', () => {
+            cy.searchByQuery('moletom')
+
+            // Aguarda o produto aparecer e estabilizar antes de clicar
+            cy.get('a[href^="/product"]', { timeout: 10000 })
+              .should('be.visible')
+              .first()
+              .should('exist') // Garante que o elemento está no DOM
+              .click({ force: true }) // Força o clique mesmo se o Cypress achar que não está 100% pronto
+
+            cy.location('pathname', { timeout: 10000 }).should('include', '/product')
+            cy.contains('Adicionar ao carrinho').click()
+            cy.contains('Cart (1)').should('exist')
+          })
+
+      - name: Handle Prerendering Error
+        run: |
+          echo "Error occurred prerendering page \"/product/camiseta-dowhile-2022\". Read more: https://nextjs.org/docs/messages/prerender-error"
+          echo "TypeError: fetch failed"
+
