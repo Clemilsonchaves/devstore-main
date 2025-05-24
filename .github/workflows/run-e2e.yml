@@ -47,7 +47,7 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: "https://ignite-devstore-api.vercel.app"
         with:
           build: pnpm run build
-          start:  pnpm start
+          start: pnpm start
           wait-on: "http://localhost:3000"
           wait-on-timeout: 60
 
