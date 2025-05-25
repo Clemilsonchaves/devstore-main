@@ -38,4 +38,17 @@ describe('add product to cart', () => {
 
     cy.contains('Cart (1)').should('exist')
   })
+
+  it('should run cypress tests', () => {
+    cy.request('http://localhost:3000').its('status').should('eq', 200)
+
+    cy.visit('http://localhost:3000')
+
+    cy.get('a[href^="/product"]').first().click()
+
+    cy.location('pathname').should('include', '/product')
+    cy.contains('Adicionar ao carrinho').click()
+
+    cy.contains('Cart (1)').should('exist')
+  })
 })
