@@ -21,14 +21,10 @@ jobs:
           run_install: false
 
       - name: Get pnpm store directory
-        id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Debug STORE_PATH
-        run: echo "STORE_PATH is ${{ env.STORE_PATH }}"
-
+  
       - uses: actions/cache@v3
         name: Setup pnpm cache
         with:
@@ -40,39 +36,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build application
-        run: pnpm run build
-
-      - name: Start application
-        run: pnpm start &
-
-      - name: Run Cypress Tests
+      - name: Cypress run
         uses: cypress-io/github-action@v6
-        env:
+        env: 
           APP_URL: "http://localhost:3000"
           NEXT_PUBLIC_API_BASE_URL: "https://ignite-devstore-api.vercel.app"
         with:
-          wait-on: "http://localhost:3000"
-          wait-on-timeout: 90
-
-      - name: Cypress Test - Search and Add to Cart
-        run: |
-          it('should be able to search for a product and add it to the cart', () => {
-            // Realiza a busca
-            cy.get('input[aria-label="Search"]').type('Product Name');
-        
-            // Aguarda o resultado aparecer e estar estável
-            cy.get('a.group.relative.col-span-6.row-span-6', { timeout: 10000 })
-              .should('be.visible')
-              .should('not.have.class', 'loading')
-              .first()
-              .should('exist')
-              .click({ force: true });
-        
-            // Adiciona ao carrinho
-            cy.get('button[aria-label="Add to Cart"]').should('be.visible').click();
-        
-            // Verifica se o carrinho foi atualizado
-            cy.get('.cart').should('contain', '1 item');
-          });
-
+          build: npm run build
+          start: npm start
